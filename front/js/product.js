@@ -57,16 +57,7 @@ fetch(`http://localhost:3000/api/products/${id}`)
         localStorage.setItem("product", JSON.stringify(productCartStorage));
       };
       let productCartStorage = JSON.parse(localStorage.getItem("product"));
-      for (let k = 0; k < productCartStorage.length; k++){
-        let productCartId = productCartStorage[k].productId
-        let productCartColor = productCartStorage[k].productColor
-        let productCartPrice = productCartStorage[k].productPrice
-        let productCartQuantity = productCartStorage[k].productQuantity
-        console.log(productCartQuantity)
-        console.log(productCartColor)
-        console.log(productCartPrice)
-        console.log(productCartId)
-      }
+     
       if (productCartStorage) {
         addProductLocalStorage();
       }
@@ -81,12 +72,17 @@ fetch(`http://localhost:3000/api/products/${id}`)
     // Une erreur est survenue
   })
 
- /*
+ /*for (let k = 0; k < productCartStorage.length; k++){
+          let productCartId = productCartStorage[k].productId
+          let productCartColor = productCartStorage[k].productColor
+          let productCartPrice = productCartStorage[k].productPrice
+          let productCartQuantity = productCartStorage[k].productQuantity
       
-      if ((el) => el.productId == productCartId && el.productColor == productCartColor) {
+      if productCartStorage = ((el) => el.productId == productCartId && el.productColor == productCartColor) {
        const productTotalPrice = ((el) => el.productPrice + productCartPrice)
        const productTotalQuantity = ((el) => el.productQuantity + productCartQuantity)
        productCart[1].push(productTotalPrice)
        productCart[4].push(productTotalQuantity)
+       productCartStorage.push(productCart)
        localStorage.setItem("product", JSON.stringify(productCartStorage))
       }*/

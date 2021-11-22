@@ -6,8 +6,6 @@
     }
 })()
 const items = document.getElementById("items")
-let ancientTemplate = document.querySelector("#items a")
-items.removeChild(ancientTemplate)
 
 function getArticles() {
     return fetch("http://localhost:3000/api/products")
@@ -28,7 +26,7 @@ function displayArticle() {
     `<a href="./product.html?id=${article._id}">
     <article>
       <img src="${article.imageUrl}" alt="${article.altTxt}">
-      <h3 id="productName">${article.name}</h3>
+      <h3 class="productName">${article.name}</h3>
       <p class="productDescription">${article.description}</p>
     </article>
   </a> `
