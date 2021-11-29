@@ -35,6 +35,7 @@ for (i = 0; i < productCartStorage.length; i++) {
       </div>
     </div>
   </article>`;
+  const quantityInput = document.querySelector(".itemQuantity")
 
   let productCartPrice = productCartStorage[i].productPrice * productCartStorage[i].productQuantity
   let productCartQuantity = productCartStorage[i].productQuantity
@@ -45,7 +46,7 @@ for (i = 0; i < productCartStorage.length; i++) {
     userCart.innerHTML = structureCartProduct;
   }
 
-const reducer = (accumulator, currentValue) => accumulator +currentValue
+const reducer = (accumulator, currentValue) => accumulator + currentValue
 const priceTotal = priceTotalCalc.reduce(reducer)
 document.getElementById("totalPrice").textContent = priceTotal
 const quantityTotal = quantityTotalCalc.reduce(reducer)
@@ -59,10 +60,26 @@ for (let k = 0; k < deleteBtn.length; k++){
   deleteBtn[k].addEventListener("click" , (event) =>{
     event.preventDefault()
     let deleteProduct = productCartStorage[k].productId && productCartStorage[k].productColor
-    /*let deleteProductColor = productCartStorage[k].productColor*/
-    
-    productCartStorage = productCartStorage.filter((el) => el.productId && el.productColor !== deleteProduct /*&& el.productColor !== deleteProductColor*/)
+     
+    productCartStorage = productCartStorage.filter((el) => el.productId && el.productColor !== deleteProduct)
     localStorage.setItem("product", JSON.stringify(productCartStorage))
     window.location.href = "cart.html"
   })
+}
+/*changement quantité prix dynamique*/
+for (k = 0; k < productCartStorage.length; k++){
+  const quantityInput = document.querySelector(".itemQuantity")
+  const product = productCartStorage[k]
+quantityInput.addEventListener("change", updateValue)
+
+function updateValue(e) {
+console.log(quantityInput.value)
+let productCartPrice = product.productPrice * quantityInput.value
+let productCartQuantity = quantityInput.value
+  const reducer = (accumulator, currentValue) => accumulator + currentValue
+  const priceTotal = productCartPrice.reduce(reducer)
+  document.getElementById("totalPrice").textContent = priceTotal
+  const quantityTotal = quantityTotalCalc.reduce(reducer)
+  document.getElementById("totalQuantity").textContent = quantityTotal
+}
 }

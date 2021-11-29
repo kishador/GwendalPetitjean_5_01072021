@@ -1,6 +1,6 @@
-let str = window.location.href;
-let url = new URL(str);
-let id = url.searchParams.get("id");
+const str = window.location.href;
+const url = new URL(str);
+const id = url.searchParams.get("id");
 
 fetch(`http://localhost:3000/api/products/${id}`)
   .then(function (response) {
@@ -21,7 +21,7 @@ fetch(`http://localhost:3000/api/products/${id}`)
 
     const colorChoice = document.getElementById("colors");
 
-    let ancientTemplate = document.querySelector("#colors option");
+    const ancientTemplate = document.querySelector("#colors option");
     colorChoice.removeChild(ancientTemplate);
 
     for (let i = 0; i < data.colors.length; i++) {
@@ -43,23 +43,41 @@ fetch(`http://localhost:3000/api/products/${id}`)
       const priceValue = parseFloat(data.price)
       const colorsChoice = colorChoice.value;
 
-      let productCart = {
-        productName: data.name,
-        productPrice: priceValue,
-        productId: id,
-        productColor: colorsChoice,
-        productQuantity: quantityValue,
-        productImg: data.imageUrl,
-        productImgAlt: data.altTxt,
-      };
+      
       const addProductLocalStorage = () => {
+        let productCart = {
+          productName: data.name,
+          productPrice: priceValue,
+          productId: id,
+          productColor: colorsChoice,
+          productQuantity: quantityValue,
+          productImg: data.imageUrl,
+          productImgAlt: data.altTxt,
+         }
         productCartStorage.push(productCart);
         localStorage.setItem("product", JSON.stringify(productCartStorage));
       };
       let productCartStorage = JSON.parse(localStorage.getItem("product"));
      
       if (productCartStorage) {
-        addProductLocalStorage();
+        for (let k = 0; k < productCartStorage.length; k++){
+        const product = productCartStorage[k]
+          
+        const productCartColor = product.productColor
+        const productCartId = product.productId
+        const productCartQuantity = product.productQuantity
+        
+        if (id === productCartId && colorsChoice === productCartColor){
+          product.productQuantity = quantityValue + productCartQuantity
+          localStorage.setItem("product", JSON.stringify(productCartStorage));
+          console.log(this)
+        
+        }
+        else {
+          addProductLocalStorage()
+          console.log(productCartStorage)
+        }
+      }
       }
       
       else {
@@ -71,18 +89,3 @@ fetch(`http://localhost:3000/api/products/${id}`)
   .catch(function (err) {
     // Une erreur est survenue
   })
-
- /*for (let k = 0; k < productCartStorage.length; k++){
-          let productCartId = productCartStorage[k].productId
-          let productCartColor = productCartStorage[k].productColor
-          let productCartPrice = productCartStorage[k].productPrice
-          let productCartQuantity = productCartStorage[k].productQuantity
-      
-      if productCartStorage = ((el) => el.productId == productCartId && el.productColor == productCartColor) {
-       const productTotalPrice = ((el) => el.productPrice + productCartPrice)
-       const productTotalQuantity = ((el) => el.productQuantity + productCartQuantity)
-       productCart[1].push(productTotalPrice)
-       productCart[4].push(productTotalQuantity)
-       productCartStorage.push(productCart)
-       localStorage.setItem("product", JSON.stringify(productCartStorage))
-      }*/
