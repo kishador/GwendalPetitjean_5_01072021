@@ -75,7 +75,6 @@ quantityInput.addEventListener("change", updateValue)
 function updateValue(e) {
 console.log(quantityInput.value)
 let productCartPrice = product.productPrice * quantityInput.value
-let productCartQuantity = quantityInput.value
   const reducer = (accumulator, currentValue) => accumulator + currentValue
   const priceTotal = productCartPrice.reduce(reducer)
   document.getElementById("totalPrice").textContent = priceTotal

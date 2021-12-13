@@ -2,6 +2,7 @@ const str = window.location.href;
 const url = new URL(str);
 const id = url.searchParams.get("id");
 
+
 fetch(`http://localhost:3000/api/products/${id}`)
   .then(function (response) {
     if (response.ok) {
@@ -29,23 +30,19 @@ fetch(`http://localhost:3000/api/products/${id}`)
       const templateColor = `<option value="${color}">${color}</option>`;
       colorChoice.innerHTML += templateColor;
     }
-
+    
     //panier//
-
+    
     const btnAddCart = document.getElementById("addToCart");
     btnAddCart.addEventListener("click", (Event) => {
       Event.preventDefault();
-      const quantity = document.querySelector(
-        ".item__content__settings__quantity input"
-      );
+     
       const quantityString = quantity.value;
       const quantityValue = parseInt(quantityString)
       const priceValue = parseFloat(data.price)
       const colorsChoice = colorChoice.value;
-
-      
-      const addProductLocalStorage = () => {
-        let productCart = {
+      let productCartStorage = JSON.parse(localStorage.getItem("product"))
+        let objectProduct = {
           productName: data.name,
           productPrice: priceValue,
           productId: id,
@@ -53,39 +50,40 @@ fetch(`http://localhost:3000/api/products/${id}`)
           productQuantity: quantityValue,
           productImg: data.imageUrl,
           productImgAlt: data.altTxt,
-         }
-        productCartStorage.push(productCart);
-        localStorage.setItem("product", JSON.stringify(productCartStorage));
-      };
-      let productCartStorage = JSON.parse(localStorage.getItem("product"));
-     
-      if (productCartStorage) {
-        for (let k = 0; k < productCartStorage.length; k++){
-        const product = productCartStorage[k]
-          
-        const productCartColor = product.productColor
-        const productCartId = product.productId
-        const productCartQuantity = product.productQuantity
-        
-        if (id === productCartId && colorsChoice === productCartColor){
-          product.productQuantity = quantityValue + productCartQuantity
-          localStorage.setItem("product", JSON.stringify(productCartStorage));
-          console.log(this)
-        
         }
-        else {
-          addProductLocalStorage()
-          console.log(productCartStorage)
-        }
-      }
-      }
-      
-      else {
-        productCartStorage = [];
-        addProductLocalStorage();
-      }
+        if (productCartStorage) {
+            let alreadyPresent = false;
+            let indexModification;
+            for (products of productCartStorage) {
+                switch (products.productId + products.productColor) {
+                    case objectProduct.productId + objectProduct.productColor:
+                        alreadyPresent = true;
+                        indexModification = productCartStorage.indexOf(products)
+                        
+                      
+                }
+            }
+
+            if (alreadyPresent) {
+                productCartStorage[indexModification].productQuantity =
+                     +productCartStorage[indexModification].productQuantity + +objectProduct.productQuantity;
+                localStorage.setItem("product", JSON.stringify(productCartStorage));
+
+            } else {
+                productCartStorage.push(objectProduct);
+                localStorage.setItem("product", JSON.stringify(productCartStorage));
+            }
+          }
+          else {
+            productCartStorage = [];
+            productCartStorage.push(objectProduct);
+            localStorage.setItem("product", JSON.stringify(productCartStorage));
+            
+          }
+        
     })
   })
   .catch(function (err) {
     // Une erreur est survenue
   })
+  
