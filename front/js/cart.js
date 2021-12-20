@@ -1,10 +1,8 @@
 let productCartStorage = JSON.parse(localStorage.getItem("product"));
-
-let structureCartProduct = []
+const userCart = document.getElementById("cart__items")
 let priceTotalCalc = []
 let quantityTotalCalc =[]
 
-const userCart = document.getElementById("cart__items")
 if(productCartStorage === null || productCartStorage == 0){
   const cartEmpty = 
   `<div> Le panier est vide </div>`
@@ -13,72 +11,123 @@ if(productCartStorage === null || productCartStorage == 0){
   document.getElementById("totalQuantity").textContent = "0"
 }
 else{ 
-for (i = 0; i < productCartStorage.length; i++) {
-    structureCartProduct = structureCartProduct + ` <article class="cart__item" data-id="${productCartStorage[i].productId}" data-color="{product-color}">
-    <div class="cart__item__img">
-      <img src="${productCartStorage[i].productImg}" alt="${productCartStorage[i].productImgAlt}">
-    </div>
-    <div class="cart__item__content">
-      <div class="cart__item__content__description">
-        <h2>${productCartStorage[i].productName}</h2>
-        <p>${productCartStorage[i].productColor}</p>
-        <p>${productCartStorage[i].productPrice} €</p>
-      </div>
-      <div class="cart__item__content__settings">
-        <div class="cart__item__content__settings__quantity">
-        <p></p>
-          <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productCartStorage[i].productQuantity}">
-        </div>
-        <div class="cart__item__content__settings__delete">
-          <p class="deleteItem">Supprimer</p>
-        </div>
-      </div>
-    </div>
-  </article>`;
-  const quantityInput = document.querySelector(".itemQuantity")
+for (i = 0; i < productCartStorage.length; i++) { 
+  const couch = productCartStorage[i]
+  let totalItemPrice = couch.productPrice * couch.productQuantity
+let newArticle = document.createElement("article")
+newArticle.className = "cart__item";
+newArticle.setAttribute(`data-id`, `${couch.productId}`)
+newArticle.setAttribute(`data-color`, `${couch.productColor}`)
 
-  let productCartPrice = productCartStorage[i].productPrice * productCartStorage[i].productQuantity
-  let productCartQuantity = productCartStorage[i].productQuantity
-  priceTotalCalc.push(productCartPrice)
-  quantityTotalCalc.push(productCartQuantity)
-  }
-  if(i == productCartStorage.length){
-    userCart.innerHTML = structureCartProduct;
-  }
+let newDivImg = document.createElement("div")
+newDivImg.className = "cart__item__img";
+
+let newImg = document.createElement("img")
+newImg.setAttribute(`src`, `${couch.productImg}`)
+newImg.setAttribute(`alt`, `${couch.productImgAlt}`)
+
+let newDivItem = document.createElement("div")
+newDivItem.className = "cart__item__content"
+
+let newDivItemDescription = document.createElement("div")
+newDivItemDescription.className = "cart__item__content__description"
+
+let newDescriptionName = document.createElement("h2")
+newDescriptionName.textContent = `${couch.productName}`
+
+let newDescriptionColor = document.createElement("p")
+newDescriptionColor.textContent = `${couch.productColor}`
+
+let newDescriptionPrice = document.createElement("p")
+newDescriptionPrice.textContent = `${totalItemPrice},00 €`
+
+let newDivItemSettings = document.createElement("div")
+newDivItemSettings.className = "cart__item__content__settings"
+
+let newSettingsQuantity = document.createElement("div")
+newSettingsQuantity.className = "cart__item__content__settings__quantity"
+
+let newQuantityP = document.createElement("p")
+newQuantityP.textContent = `Qté :`
+
+let newQuantityInput = document.createElement("input")
+newQuantityInput.className = "itemQuantity"
+newQuantityInput.setAttribute(`type`, `number`)
+newQuantityInput.setAttribute(`name`, `itemQuantity`)
+newQuantityInput.setAttribute(`min`, `1`)
+newQuantityInput.setAttribute(`max`, `100`)
+newQuantityInput.setAttribute(`value`, `${couch.productQuantity}`)
+
+let newSettingsDelete = document.createElement("div")
+newSettingsDelete.className = "cart__item__content__settings__delete"
+
+let newDeleteP = document.createElement("p")
+newDeleteP.className = "deleteItem"
+newDeleteP.textContent = "Supprimer"
+
+newSettingsDelete.prepend(newDeleteP)
+newSettingsQuantity.prepend(newQuantityP)
+newSettingsQuantity.append(newQuantityInput)
+newDivItemSettings.prepend(newSettingsQuantity)
+newDivItemSettings.append(newSettingsDelete)
+newDivItemDescription.prepend(newDescriptionName)
+newDivItemDescription.append(newDescriptionColor)
+newDivItemDescription.append(newDescriptionPrice)
+newDivItem.prepend(newDivItemDescription)
+newDivItem.append(newDivItemSettings)
+newDivImg.prepend(newImg)
+newArticle.prepend(newDivImg)
+newArticle.append(newDivItem)
+userCart.prepend(newArticle)
+
+/* SUPPRESSION DES ARTICLES */
+let deleteProduct = couch.productId + couch.productColor
+function deleteP() {
+  productCartStorage = productCartStorage.filter((el) => el.productId + el.productColor !== deleteProduct)
+  localStorage.setItem("product", JSON.stringify(productCartStorage))
+  window.location.href = "cart.html"
+}
+newDeleteP.addEventListener("click", deleteP, true)
+
+priceTotalCalc.push(totalItemPrice)
+
+quantityTotalCalc.push(newQuantityInput.value)
 
 const reducer = (accumulator, currentValue) => accumulator + currentValue
 const priceTotal = priceTotalCalc.reduce(reducer)
 document.getElementById("totalPrice").textContent = priceTotal
 const quantityTotal = quantityTotalCalc.reduce(reducer)
 document.getElementById("totalQuantity").textContent = quantityTotal
-}
 
-/*suppression des articles*/
-const deleteBtn = document.querySelectorAll(".deleteItem")
+let price = productCartStorage[i].productPrice
+newQuantityInput.addEventListener("change", (e) =>{
+  let inputValue = newQuantityInput.value
+let totalItemPrice = price * inputValue
+newDescriptionPrice.textContent = `${totalItemPrice},00 €`
+})    
+}
+}
+/* envoi du formulaire et tableau produit */
+const order = document.getElementById("order")
+function orderCart() {
+  const firstNameForm = document.getElementById("firstName")
+  const lastNameForm = document.getElementById("lastName")
+  const addressForm = document.getElementById("address")
+  const cityForm = document.getElementById("city")
+  const emailForm = document.getElementById("email")
+  const cartOrder = [] 
+    let formulaire = {
+      firstName: firstNameForm.value,
+      lastName: lastNameForm.value,
+      adress: addressForm.value,
+      city: cityForm.value,
+      email: emailForm.value
+    }
+    cartOrder.push(productCartStorage)
+    cartOrder.push(formulaire)
+  }
 
-for (let k = 0; k < deleteBtn.length; k++){
-  deleteBtn[k].addEventListener("click" , (event) =>{
-    event.preventDefault()
-    let deleteProduct = productCartStorage[k].productId && productCartStorage[k].productColor
-     
-    productCartStorage = productCartStorage.filter((el) => el.productId && el.productColor !== deleteProduct)
-    localStorage.setItem("product", JSON.stringify(productCartStorage))
-    window.location.href = "cart.html"
-  })
-}
-/*changement quantité prix dynamique*/
-for (k = 0; k < productCartStorage.length; k++){
-  const quantityInput = document.querySelector(".itemQuantity")
-  const product = productCartStorage[k]
-quantityInput.addEventListener("change", updateValue)
 
-function updateValue(e) {
-console.log(quantityInput.value)
-let productCartPrice = product.productPrice * quantityInput.value
-  const reducer = (accumulator, currentValue) => accumulator + currentValue
-  const priceTotal = productCartPrice.reduce(reducer)
-  document.getElementById("totalPrice").textContent = priceTotal
-  const quantityTotal = quantityTotalCalc.reduce(reducer)
-  document.getElementById("totalQuantity").textContent = quantityTotal
-}
-}
+order.addEventListener("click", orderCart)
+
+
