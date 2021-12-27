@@ -3,6 +3,15 @@ const userCart = document.getElementById("cart__items")
 let priceTotalCalc = []
 let quantityTotalCalc =[]
 
+
+if (location.href.match(/confirmation/)) {
+  const str = window.location.href;
+const url = new URL(str);
+const id = url.searchParams.get("id");
+  document.getElementById("orderId").textContent = `${id}`
+ 
+}
+else {
 if(productCartStorage === null || productCartStorage == 0){
   const cartEmpty = 
   `<div> Le panier est vide </div>`
@@ -18,7 +27,6 @@ let newArticle = document.createElement("article")
 newArticle.className = "cart__item";
 newArticle.setAttribute(`data-id`, `${couch.productId}`)
 newArticle.setAttribute(`data-color`, `${couch.productColor}`)
-
 let newDivImg = document.createElement("div")
 newDivImg.className = "cart__item__img";
 
@@ -39,6 +47,7 @@ let newDescriptionColor = document.createElement("p")
 newDescriptionColor.textContent = `${couch.productColor}`
 
 let newDescriptionPrice = document.createElement("p")
+newDescriptionPrice.className = "priceCalc"
 newDescriptionPrice.textContent = `${totalItemPrice},00 €`
 
 let newDivItemSettings = document.createElement("div")
@@ -89,45 +98,111 @@ function deleteP() {
 }
 newDeleteP.addEventListener("click", deleteP, true)
 
+const quantityValue = parseInt(newQuantityInput.value)
 priceTotalCalc.push(totalItemPrice)
+quantityTotalCalc.push(quantityValue)
 
-quantityTotalCalc.push(newQuantityInput.value)
 
-const reducer = (accumulator, currentValue) => accumulator + currentValue
-const priceTotal = priceTotalCalc.reduce(reducer)
-document.getElementById("totalPrice").textContent = priceTotal
-const quantityTotal = quantityTotalCalc.reduce(reducer)
-document.getElementById("totalQuantity").textContent = quantityTotal
 
 let price = productCartStorage[i].productPrice
 newQuantityInput.addEventListener("change", (e) =>{
   let inputValue = newQuantityInput.value
 let totalItemPrice = price * inputValue
 newDescriptionPrice.textContent = `${totalItemPrice},00 €`
+
 })    
 }
+function priceQuantityTotal() {
+  const reducer = (accumulator, currentValue) => accumulator + currentValue
+const priceTotal = priceTotalCalc.reduce(reducer)
+document.getElementById("totalPrice").textContent = priceTotal
+const quantityTotal = quantityTotalCalc.reduce(reducer)
+document.getElementById("totalQuantity").textContent = quantityTotal
 }
-/* envoi du formulaire et tableau produit */
-const order = document.getElementById("order")
-function orderCart() {
-  const firstNameForm = document.getElementById("firstName")
-  const lastNameForm = document.getElementById("lastName")
-  const addressForm = document.getElementById("address")
-  const cityForm = document.getElementById("city")
-  const emailForm = document.getElementById("email")
-  const cartOrder = [] 
-    let formulaire = {
-      firstName: firstNameForm.value,
-      lastName: lastNameForm.value,
-      adress: addressForm.value,
-      city: cityForm.value,
-      email: emailForm.value
-    }
-    cartOrder.push(productCartStorage)
-    cartOrder.push(formulaire)
+priceQuantityTotal()
+
+let priceCalc = document.getElementsByClassName("priceCalc")
+let newQuantityInput = document.getElementsByClassName("itemQuantity")
+for (item of newQuantityInput) {
+item.addEventListener("change", (e) =>{
+  let priceTotalCalc = []
+  let quantityTotalCalc = []
+  for (item of newQuantityInput) {
+    const quantityValue = parseInt(item.value)
+    quantityTotalCalc.push(quantityValue)
   }
+  for (item of priceCalc) {
+  let valueItem = item.textContent
+  valueItem = valueItem.replace(",00 €", "")
+  const priceValue = parseInt(valueItem)
+  priceTotalCalc.push(priceValue)
+  }
+const reducer = (accumulator, currentValue) => accumulator + currentValue
+const priceTotal = priceTotalCalc.reduce(reducer)
+document.getElementById("totalPrice").textContent = priceTotal
+const quantityTotal = quantityTotalCalc.reduce(reducer)
+document.getElementById("totalQuantity").textContent = quantityTotal
+})
+}
+}
 
 
-order.addEventListener("click", orderCart)
 
+    //validation du formulaire et envoie en POST
+    const order = document.getElementById("order");
+    const regexName = /^(([a-zA-ZÀ-ÿ]+[\s\-]{1}[a-zA-ZÀ-ÿ]+)|([a-zA-ZÀ-ÿ]+))$/;
+    const regexCity = /^(([a-zA-ZÀ-ÿ]+[\s\-]{1}[a-zA-ZÀ-ÿ]+)|([a-zA-ZÀ-ÿ]+)){1,10}$/;
+    const regexMail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]{2,}\.[a-z]{2,4}$/;
+    const regexAddress = /^(([a-zA-ZÀ-ÿ0-9]+[\s\-]{1}[a-zA-ZÀ-ÿ0-9]+)){1,10}$/;
+
+    order.addEventListener("click", (event) => {
+        // on prépare les infos pour l'envoie en POST
+        let contact = {
+            firstName: document.getElementById("firstName").value,
+            lastName: document.getElementById("lastName").value,
+            address: document.getElementById("address").value,
+            city: document.getElementById("city").value,
+            email: document.getElementById("email").value,
+        };
+        // on valide que le formulaire soit correctement rempli
+        if (
+            (regexMail.test(contact.email) == true) &
+            (regexName.test(contact.firstName) == true) &
+            (regexName.test(contact.lastName) == true) &
+            (regexCity.test(contact.city) == true) &
+            (regexAddress.test(contact.address) == true) 
+           
+        ) {
+            event.preventDefault();
+            
+
+            let products = [];
+            for (couch of productCartStorage) {
+                products.push(couch.productId);
+                console.log(products)
+            }
+            localStorage.clear("product")
+
+            // on envoie en POST
+            fetch("http://localhost:3000/api/products/order", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ contact, products }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    document.location.href = `confirmation.html?id=${data.orderId}`
+
+
+                })
+                .catch((erreur) => console.log("erreur : " + erreur));
+          } else {
+            alert(
+                "Veuillez remplir le formulaire afin de valider votre commande."
+            );
+        }
+      })
+    }
 
