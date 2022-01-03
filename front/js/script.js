@@ -1,12 +1,4 @@
-(async function() {
-    const articles = await getArticles()
-
-    for(article of articles) {
-        displayArticle(article)
-    }
-})()
-const items = document.getElementById("items")
-
+/* on va chercher les articles de l'API */
 function getArticles() {
     return fetch("http://localhost:3000/api/products")
     .then(function(httpBodyResponse){
@@ -20,7 +12,8 @@ function getArticles() {
     })
 }
 
-
+/* on crée un article et on l'injecte dans le HTML*/
+const items = document.getElementById("items")
 function displayArticle() {
     const template =
     `<a href="./product.html?id=${article._id}">
@@ -31,6 +24,14 @@ function displayArticle() {
     </article>
   </a> `
   
-  items.innerHTML += template
-  
+  items.innerHTML += template  
 }
+
+/* on attend la réponse de l'API et on crée les articles en fonction*/
+(async function() {
+    const articles = await getArticles()
+
+    for(article of articles) {
+        displayArticle(article)
+    }
+})()

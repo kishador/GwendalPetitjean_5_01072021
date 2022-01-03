@@ -1,9 +1,10 @@
+/*on recupere les produits du localStorage*/
 let productCartStorage = JSON.parse(localStorage.getItem("product"));
 const userCart = document.getElementById("cart__items")
-let priceTotalCalc = []
-let quantityTotalCalc =[]
+const priceTotalCalc = []
+const quantityTotalCalc =[]
 
-
+/* si page de confirmation affiche le numéro de commande*/
 if (location.href.match(/confirmation/)) {
   const str = window.location.href;
 const url = new URL(str);
@@ -12,6 +13,7 @@ const id = url.searchParams.get("id");
  
 }
 else {
+  /* pannier vide*/
 if(productCartStorage === null || productCartStorage == 0){
   const cartEmpty = 
   `<div> Le panier est vide </div>`
@@ -20,46 +22,47 @@ if(productCartStorage === null || productCartStorage == 0){
   document.getElementById("totalQuantity").textContent = "0"
 }
 else{ 
+  /*création et affichage de tous les produits*/
 for (i = 0; i < productCartStorage.length; i++) { 
   const couch = productCartStorage[i]
-  let totalItemPrice = couch.productPrice * couch.productQuantity
-let newArticle = document.createElement("article")
+  const totalItemPrice = couch.productPrice * couch.productQuantity
+const newArticle = document.createElement("article")
 newArticle.className = "cart__item";
 newArticle.setAttribute(`data-id`, `${couch.productId}`)
 newArticle.setAttribute(`data-color`, `${couch.productColor}`)
-let newDivImg = document.createElement("div")
+const newDivImg = document.createElement("div")
 newDivImg.className = "cart__item__img";
 
-let newImg = document.createElement("img")
+const newImg = document.createElement("img")
 newImg.setAttribute(`src`, `${couch.productImg}`)
 newImg.setAttribute(`alt`, `${couch.productImgAlt}`)
 
-let newDivItem = document.createElement("div")
+const newDivItem = document.createElement("div")
 newDivItem.className = "cart__item__content"
 
-let newDivItemDescription = document.createElement("div")
+const newDivItemDescription = document.createElement("div")
 newDivItemDescription.className = "cart__item__content__description"
 
-let newDescriptionName = document.createElement("h2")
+const newDescriptionName = document.createElement("h2")
 newDescriptionName.textContent = `${couch.productName}`
 
-let newDescriptionColor = document.createElement("p")
+const newDescriptionColor = document.createElement("p")
 newDescriptionColor.textContent = `${couch.productColor}`
 
-let newDescriptionPrice = document.createElement("p")
+const newDescriptionPrice = document.createElement("p")
 newDescriptionPrice.className = "priceCalc"
 newDescriptionPrice.textContent = `${totalItemPrice},00 €`
 
-let newDivItemSettings = document.createElement("div")
+const newDivItemSettings = document.createElement("div")
 newDivItemSettings.className = "cart__item__content__settings"
 
-let newSettingsQuantity = document.createElement("div")
+const newSettingsQuantity = document.createElement("div")
 newSettingsQuantity.className = "cart__item__content__settings__quantity"
 
-let newQuantityP = document.createElement("p")
+const newQuantityP = document.createElement("p")
 newQuantityP.textContent = `Qté :`
 
-let newQuantityInput = document.createElement("input")
+const newQuantityInput = document.createElement("input")
 newQuantityInput.className = "itemQuantity"
 newQuantityInput.setAttribute(`type`, `number`)
 newQuantityInput.setAttribute(`name`, `itemQuantity`)
@@ -67,10 +70,10 @@ newQuantityInput.setAttribute(`min`, `1`)
 newQuantityInput.setAttribute(`max`, `100`)
 newQuantityInput.setAttribute(`value`, `${couch.productQuantity}`)
 
-let newSettingsDelete = document.createElement("div")
+const newSettingsDelete = document.createElement("div")
 newSettingsDelete.className = "cart__item__content__settings__delete"
 
-let newDeleteP = document.createElement("p")
+const newDeleteP = document.createElement("p")
 newDeleteP.className = "deleteItem"
 newDeleteP.textContent = "Supprimer"
 
@@ -89,8 +92,8 @@ newArticle.prepend(newDivImg)
 newArticle.append(newDivItem)
 userCart.prepend(newArticle)
 
-/* SUPPRESSION DES ARTICLES */
-let deleteProduct = couch.productId + couch.productColor
+/* suppression des articles */
+const deleteProduct = couch.productId + couch.productColor
 function deleteP() {
   productCartStorage = productCartStorage.filter((el) => el.productId + el.productColor !== deleteProduct)
   localStorage.setItem("product", JSON.stringify(productCartStorage))
@@ -98,35 +101,30 @@ function deleteP() {
 }
 newDeleteP.addEventListener("click", deleteP, true)
 
+/* envoi des valeurs pour calcul du prix total et quantité totale*/
 const quantityValue = parseInt(newQuantityInput.value)
 priceTotalCalc.push(totalItemPrice)
 quantityTotalCalc.push(quantityValue)
 
-
-
-let price = productCartStorage[i].productPrice
+/* calcul prix total d'un produit dynamiquement*/
+const price = productCartStorage[i].productPrice
 newQuantityInput.addEventListener("change", (e) =>{
-  let inputValue = newQuantityInput.value
-let totalItemPrice = price * inputValue
+  const inputValue = newQuantityInput.value
+const totalItemPrice = price * inputValue
 newDescriptionPrice.textContent = `${totalItemPrice},00 €`
 
 })    
 }
-function priceQuantityTotal() {
-  const reducer = (accumulator, currentValue) => accumulator + currentValue
-const priceTotal = priceTotalCalc.reduce(reducer)
-document.getElementById("totalPrice").textContent = priceTotal
-const quantityTotal = quantityTotalCalc.reduce(reducer)
-document.getElementById("totalQuantity").textContent = quantityTotal
-}
-priceQuantityTotal()
+priceQuantityTotal(priceTotalCalc, quantityTotalCalc)
 
-let priceCalc = document.getElementsByClassName("priceCalc")
-let newQuantityInput = document.getElementsByClassName("itemQuantity")
+/*calcul du prix total et quantité totale dynamiquement*/
+const priceCalc = document.getElementsByClassName("priceCalc")
+const newQuantityInput = document.getElementsByClassName("itemQuantity")
+
 for (item of newQuantityInput) {
 item.addEventListener("change", (e) =>{
-  let priceTotalCalc = []
-  let quantityTotalCalc = []
+  const priceTotalCalc = []
+  const quantityTotalCalc = []
   for (item of newQuantityInput) {
     const quantityValue = parseInt(item.value)
     quantityTotalCalc.push(quantityValue)
@@ -137,26 +135,47 @@ item.addEventListener("change", (e) =>{
   const priceValue = parseInt(valueItem)
   priceTotalCalc.push(priceValue)
   }
-const reducer = (accumulator, currentValue) => accumulator + currentValue
-const priceTotal = priceTotalCalc.reduce(reducer)
-document.getElementById("totalPrice").textContent = priceTotal
-const quantityTotal = quantityTotalCalc.reduce(reducer)
-document.getElementById("totalQuantity").textContent = quantityTotal
+  priceQuantityTotal(priceTotalCalc, quantityTotalCalc)
 })
 }
 }
 
+/*fonction pour les calculs totaux*/
+function priceQuantityTotal(priceTotalCalc, quantityTotalCalc) {
+  const reducer = (accumulator, currentValue) => accumulator + currentValue
+const priceTotal = priceTotalCalc.reduce(reducer)
+document.getElementById("totalPrice").textContent = priceTotal
+const quantityTotal = quantityTotalCalc.reduce(reducer)
+document.getElementById("totalQuantity").textContent = quantityTotal
+}
 
 
-    //validation du formulaire et envoie en POST
+    /*validation du formulaire et envoi en POST*/
     const order = document.getElementById("order");
-    const regexName = /^(([a-zA-ZÀ-ÿ]+[\s\-]{1}[a-zA-ZÀ-ÿ]+)|([a-zA-ZÀ-ÿ]+))$/;
-    const regexCity = /^(([a-zA-ZÀ-ÿ]+[\s\-]{1}[a-zA-ZÀ-ÿ]+)|([a-zA-ZÀ-ÿ]+)){1,10}$/;
+    const regexName = /^[a-z ,.'-]+$/i
+    const regexCity = /^[a-z ,.'-]+$/i
     const regexMail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]{2,}\.[a-z]{2,4}$/;
     const regexAddress = /^(([a-zA-ZÀ-ÿ0-9]+[\s\-]{1}[a-zA-ZÀ-ÿ0-9]+)){1,10}$/;
 
+    /* suppression des messages d'erreur au focus d'un input */
+const formInput = document.querySelectorAll("form input")
+for (item of formInput){
+item.addEventListener("focus", (event) => {
+  mailError.textContent ="" 
+  lastNameError.textContent =""
+  firstNameError.textContent =""
+  cityError.textContent =""
+  addressError.textContent =""
+})
+}
+    const mailError = document.getElementById("emailErrorMsg")
+    const lastNameError = document.getElementById("lastNameErrorMsg")
+    const firstNameError = document.getElementById("firstNameErrorMsg")
+    const cityError = document.getElementById("cityErrorMsg")
+    const addressError = document.getElementById("addressErrorMsg")
+
     order.addEventListener("click", (event) => {
-        // on prépare les infos pour l'envoie en POST
+        /* on prépare les infos pour l'envoi en POST*/
         let contact = {
             firstName: document.getElementById("firstName").value,
             lastName: document.getElementById("lastName").value,
@@ -164,7 +183,7 @@ document.getElementById("totalQuantity").textContent = quantityTotal
             city: document.getElementById("city").value,
             email: document.getElementById("email").value,
         };
-        // on valide que le formulaire soit correctement rempli
+        /* on valide que le formulaire soit correctement rempli*/
         if (
             (regexMail.test(contact.email) == true) &
             (regexName.test(contact.firstName) == true) &
@@ -174,16 +193,17 @@ document.getElementById("totalQuantity").textContent = quantityTotal
            
         ) {
             event.preventDefault();
-            
+            /*on efface les produits et le localStorage*/
 
+            if (productCartStorage){
             let products = [];
             for (couch of productCartStorage) {
                 products.push(couch.productId);
-                console.log(products)
             }
             localStorage.clear("product")
+          
 
-            // on envoie en POST
+            /* on envoie en POST*/
             fetch("http://localhost:3000/api/products/order", {
                 method: "POST",
                 headers: {
@@ -198,11 +218,29 @@ document.getElementById("totalQuantity").textContent = quantityTotal
 
                 })
                 .catch((erreur) => console.log("erreur : " + erreur));
-          } else {
-            alert(
-                "Veuillez remplir le formulaire afin de valider votre commande."
-            );
-        }
+              }
+          }
+          /* message d'erreur si formulaire mal rempli*/
+          else if(regexMail.test(contact.email) == false){
+            event.preventDefault();
+            mailError.textContent ="Veuillez saisir une adresse mail valide." 
+          }
+          else if(regexName.test(contact.firstName) == false){
+            event.preventDefault();
+            firstNameError.textContent ="Veuillez saisir un prénom valide." 
+          }
+          else if(regexName.test(contact.lastName) == false){
+            event.preventDefault();
+            lastNameError.textContent ="Veuillez saisir un nom valide." 
+          }
+          else if(regexCity.test(contact.city) == false){
+            event.preventDefault();
+            cityError.textContent ="Veuillez saisir une ville valide." 
+          }
+          else if(regexAddress.test(contact.address) == false){
+            event.preventDefault();
+            addressError.textContent ="Veuillez saisir une adresse valide." 
+          }
       })
     }
 
