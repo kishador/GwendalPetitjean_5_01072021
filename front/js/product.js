@@ -69,7 +69,7 @@ fetch(`http://localhost:3000/api/products/${id}`)
             /*si produit en doublon modifie la quantité uniquement*/
             if (alreadyPresent) {
                 productCartStorage[indexModification].productQuantity =
-                     +productCartStorage[indexModification].productQuantity + +objectProduct.productQuantity;
+                     productCartStorage[indexModification].productQuantity + objectProduct.productQuantity;
                 localStorage.setItem("product", JSON.stringify(productCartStorage));
             /* si tableau créé et nouveau produit l'ajoute au localStorage*/
             } else if (quantityValue >= 1){
@@ -87,6 +87,6 @@ fetch(`http://localhost:3000/api/products/${id}`)
     })
   })
   .catch(function (err) {
-    // Une erreur est survenue
+   
   })
   

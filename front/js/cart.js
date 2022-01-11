@@ -25,6 +25,11 @@ else{
   /*création et affichage de tous les produits*/
 for (i = 0; i < productCartStorage.length; i++) { 
   const couch = productCartStorage[i]
+  
+  /*recuperation produit API*/
+  let productCouch = getProduct(couch)
+  console.log(productCouch)
+
   const totalItemPrice = couch.productPrice * couch.productQuantity
 const newArticle = document.createElement("article")
 newArticle.className = "cart__item";
@@ -130,7 +135,7 @@ item.addEventListener("change", (e) =>{
     quantityTotalCalc.push(quantityValue)
   }
   for (item of priceCalc) {
-  let valueItem = item.textContent
+  let  valueItem = item.textContent
   valueItem = valueItem.replace(",00 €", "")
   const priceValue = parseInt(valueItem)
   priceTotalCalc.push(priceValue)
@@ -244,3 +249,9 @@ item.addEventListener("focus", (event) => {
       })
     }
 
+    async function getProduct(couch) {
+      const response = await fetch(`http://localhost:3000/api/products/${couch.productId}`)
+     const prod = await response.json()
+     console.log(prod)
+     return prod
+      }
