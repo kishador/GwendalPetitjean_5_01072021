@@ -3,7 +3,7 @@ let productCartStorage = JSON.parse(localStorage.getItem("product"));
 const userCart = document.getElementById("cart__items")
 const priceTotalCalc = []
 const quantityTotalCalc =[]
-
+console.log(productCartStorage)
 /* si page de confirmation affiche le numéro de commande*/
 if (location.href.match(/confirmation/)) {
   const str = window.location.href;
@@ -27,9 +27,10 @@ for (i = 0; i < productCartStorage.length; i++) {
   const couch = productCartStorage[i]
   
   /*recuperation produit API*/
-  let productCouch = getProduct(couch)
-  console.log(productCouch)
-
+  let couchTabl = [] 
+  getProduct(couch, couchTabl)
+    console.log(couchTabl)
+ 
   const totalItemPrice = couch.productPrice * couch.productQuantity
 const newArticle = document.createElement("article")
 newArticle.className = "cart__item";
@@ -249,9 +250,20 @@ item.addEventListener("focus", (event) => {
       })
     }
 
-    async function getProduct(couch) {
-      const response = await fetch(`http://localhost:3000/api/products/${couch.productId}`)
-     const prod = await response.json()
-     console.log(prod)
-     return prod
-      }
+    function getProduct(couch, couchTabl) {
+      return fetch(`http://localhost:3000/api/products/${couch.productId}`)
+      .then(function(response){
+          return response.json()
+      })
+      .then(function(data){ 
+let dataCouch ={
+  couchName : data.name, 
+  couchImg : data.imageUrl, 
+  couchTxt : data.altTxt }   
+couchTabl.push(dataCouch)
+return couchTabl
+      })
+      .catch(function(error){
+          alert(error)
+      })
+  }
