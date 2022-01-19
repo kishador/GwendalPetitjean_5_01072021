@@ -30,7 +30,6 @@ function displayArticle() {
 /* on attend la réponse de l'API et on crée les articles en fonction*/
 (async function() {
     const articles = await getArticles()
-    console.log(articles)
     for(article of articles) {
         displayArticle(article)
     }
