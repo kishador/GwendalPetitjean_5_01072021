@@ -14,7 +14,7 @@ function getArticles() {
 
 /* on crée un article et on l'injecte dans le HTML*/
 const items = document.getElementById("items")
-function displayArticle() {
+function displayArticle(article) {
     const template =
     `<a href="./product.html?id=${article._id}">
     <article>

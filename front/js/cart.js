@@ -178,10 +178,23 @@ function onePriceDyn(article, newDescriptionPrice) {
 
   /*validation du formulaire et envoi en POST*/
   const order = document.getElementById("order");
-  const regexName = /^[a-z ,.'-]+$/i;
-  const regexCity = /^[a-z ,.'-]+$/i;
-  const regexMail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]{2,}\.[a-z]{2,4}$/;
-  const regexAddress = /^(([a-zA-ZÀ-ÿ0-9]+[\s\-]{1}[a-zA-ZÀ-ÿ0-9]+)){1,10}$/;
+  
+  function validMail(contact){
+    const regexMail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]{2,}\.[a-z]{2,4}$/;
+    return regexMail.test(contact.email)
+  }
+  function validName(contact){
+    const regexName = /^[a-z ,.'-]+$/i;
+    return regexName.test(contact.firstName, contact.lastName)
+  }
+  function validCity(contact){
+    const regexCity = /^[a-z ,.'-]+$/i;
+    return regexCity.test(contact.city)
+  }
+  function validAddress(contact){
+    const regexAddress = /^(([a-zA-ZÀ-ÿ0-9]+[\s\-]{1}[a-zA-ZÀ-ÿ0-9]+)){1,10}$/;
+    return regexAddress.test(contact.address)
+  }
 
   /* suppression des messages d'erreur au focus d'un input */
   const formInput = document.querySelectorAll("form input");
@@ -211,11 +224,10 @@ function onePriceDyn(article, newDescriptionPrice) {
     };
     /* on valide que le formulaire soit correctement rempli*/
     if (
-      (regexMail.test(contact.email) == true) &
-      (regexName.test(contact.firstName) == true) &
-      (regexName.test(contact.lastName) == true) &
-      (regexCity.test(contact.city) == true) &
-      (regexAddress.test(contact.address) == true)
+      validMail(contact) &
+      validName(contact) &
+      validCity(contact) &
+      validAddress(contact)  
     ) {
       event.preventDefault();
       /*on efface les produits et le localStorage*/
@@ -241,20 +253,18 @@ function onePriceDyn(article, newDescriptionPrice) {
           })
           .catch((erreur) => console.log("erreur : " + erreur));
       }
-    } else if (regexMail.test(contact.email) == false) {
+    } else if (!validMail(contact)) {
     /* message d'erreur si formulaire mal rempli*/
       event.preventDefault();
       mailError.textContent = "Veuillez saisir une adresse mail valide.";
-    } else if (regexName.test(contact.firstName) == false) {
+    } else if (!validName(contact)) {
       event.preventDefault();
       firstNameError.textContent = "Veuillez saisir un prénom valide.";
-    } else if (regexName.test(contact.lastName) == false) {
-      event.preventDefault();
       lastNameError.textContent = "Veuillez saisir un nom valide.";
-    } else if (regexCity.test(contact.city) == false) {
+    } else if (!validCity(contact)) {
       event.preventDefault();
       cityError.textContent = "Veuillez saisir une ville valide.";
-    } else if (regexAddress.test(contact.address) == false) {
+    } else if (!validAddress(contact)) {
       event.preventDefault();
       addressError.textContent = "Veuillez saisir une adresse valide.";
     }
