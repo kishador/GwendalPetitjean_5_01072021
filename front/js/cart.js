@@ -183,10 +183,15 @@ function onePriceDyn(article, newDescriptionPrice) {
     const regexMail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]{2,}\.[a-z]{2,4}$/;
     return regexMail.test(contact.email)
   }
-  function validName(contact){
+  function validFirstName(contact){
     const regexName = /^[a-z ,.'-]+$/i;
-    return regexName.test(contact.firstName, contact.lastName)
+    return regexName.test(contact.firstName)
   }
+  function validLastName(contact){
+    const regexName = /^[a-z ,.'-]+$/i;
+    return regexName.test(contact.lastName)
+  }
+
   function validCity(contact){
     const regexCity = /^[a-z ,.'-]+$/i;
     return regexCity.test(contact.city)
@@ -225,9 +230,11 @@ function onePriceDyn(article, newDescriptionPrice) {
     /* on valide que le formulaire soit correctement rempli*/
     if (
       validMail(contact) &
-      validName(contact) &
+      validFirstName(contact) &
+      validLastName(contact) &
       validCity(contact) &
-      validAddress(contact)  
+      validAddress(contact) 
+
     ) {
       event.preventDefault();
       /*on efface les produits et le localStorage*/
@@ -257,14 +264,20 @@ function onePriceDyn(article, newDescriptionPrice) {
     /* message d'erreur si formulaire mal rempli*/
       event.preventDefault();
       mailError.textContent = "Veuillez saisir une adresse mail valide.";
-    } else if (!validName(contact)) {
+    } 
+    else if (!validFirstName(contact)) {
       event.preventDefault();
       firstNameError.textContent = "Veuillez saisir un prénom valide.";
+    }
+      else if (!validLastName(contact)) {
+      event.preventDefault();
       lastNameError.textContent = "Veuillez saisir un nom valide.";
-    } else if (!validCity(contact)) {
+    } 
+    else if (!validCity(contact)) {
       event.preventDefault();
       cityError.textContent = "Veuillez saisir une ville valide.";
-    } else if (!validAddress(contact)) {
+    }
+     else if (!validAddress(contact)) {
       event.preventDefault();
       addressError.textContent = "Veuillez saisir une adresse valide.";
     }
